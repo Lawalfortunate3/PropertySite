@@ -1,0 +1,555 @@
+{% block content %}
+{% load static %}
+
+<style>
+
+
+  .property-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    margin-bottom: 15px;
+}
+    .property-page {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+        color: #1f2937;
+    }
+
+    .page-heading {
+        margin-bottom: 25px;
+    }
+
+    .page-heading h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .page-heading p {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .filter-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 25px;
+        display: flex;
+        gap: 15px;
+        align-items: end;
+        flex-wrap: wrap;
+    }
+
+    .filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .filter-field label {
+        font-size: 11px;
+        font-weight: bold;
+        color: #6b7280;
+        letter-spacing: .5px;
+    }
+
+    .filter-field select {
+        border: 1px solid #d1d5db;
+        padding: 10px 12px;
+        border-radius: 5px;
+        font-size: 14px;
+        min-width: 160px;
+        background: white;
+    }
+
+    .btn-apply {
+        background: #16a34a;
+        color: white;
+        padding: 11px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-apply:hover {
+        background: #15803d;
+    }
+
+    .btn-clear {
+        color: #4b5563;
+        text-decoration: none;
+        padding: 11px 8px;
+        font-size: 13px;
+    }
+
+    .results-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .results-heading h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .results-count {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .property-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .property-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        transition: box-shadow .2s;
+        min-width: 0;
+    }
+
+    .property-card:hover {
+        box-shadow: 0 5px 16px rgba(0, 0, 0, .08);
+    }
+
+    .property-title {
+        font-size: 17px;
+        line-height: 1.5;
+        font-weight: bold;
+        margin-bottom: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .property-badges {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .badge {
+        font-size: 10px;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .badge-rent {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .badge-sale {
+        background: #e0e7ff;
+        color: #4f46e5;
+    }
+
+    .badge-type {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .badge-available {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-sold {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .badge-rented {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .property-price {
+        color: #15803d;
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .property-location {
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+
+    .property-description {
+        color: #4b5563;
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+    }
+
+    .property-meta {
+        display: flex;
+        gap: 25px;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 14px;
+    }
+
+    .meta-label {
+        font-size: 10px;
+        font-weight: bold;
+        color: #9ca3af;
+        margin-bottom: 5px;
+    }
+
+    .meta-value {
+        font-size: 15px;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .property-state {
+        margin-top: 15px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .empty-state,
+    .error-state {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 35px 20px;
+        text-align: center;
+        color: #6b7280;
+        margin: 20px 0;
+    }
+
+    .error-state {
+        color: #b91c1c;
+        background: #fef2f2;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin: 35px 0;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        background: white;
+        border: 1px solid #d1d5db;
+        padding: 9px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #374151;
+        font-size: 13px;
+    }
+
+    .page-btn:hover {
+        background: #f3f4f6;
+    }
+
+    .page-info {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .footer-note {
+        margin-top: 30px;
+        padding: 15px 0;
+        border-top: 1px solid #e5e7eb;
+        font-size: 11px;
+        color: #9ca3af;
+        text-align: center;
+    }
+
+    @media (max-width: 600px) {
+        .property-page {
+            padding: 0 12px;
+        }
+
+        .filter-box {
+            align-items: stretch;
+        }
+
+        .filter-field,
+        .filter-field select,
+        .btn-apply {
+            width: 100%;
+        }
+
+        .property-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-heading h1 {
+            font-size: 23px;
+        }
+    }
+</style>
+
+<div class="property-page">
+
+    <div class="page-heading">
+        <h1>Find Your Property</h1>
+        <p>Explore properties available for rent and sale.</p>
+    </div>
+
+    <!-- Property filters -->
+    <div class="filter-box">
+        <form method="get"
+              action=""
+              style="display:flex; gap:12px; align-items:end; flex-wrap:wrap; width:100%;">
+
+            <input type="hidden" name="page" value="1">
+
+            <div class="filter-field">
+                <label for="city">CITY</label>
+
+                <select name="city" id="city">
+                    <option value="">All cities</option>
+
+                    <option value="Ibadan"
+                        {% if current_city == "Ibadan" %}selected{% endif %}>
+                        Ibadan
+                    </option>
+
+                    <option value="Lagos"
+                        {% if current_city == "Lagos" %}selected{% endif %}>
+                        Lagos
+                    </option>
+
+                    <option value="Abuja"
+                        {% if current_city == "Abuja" %}selected{% endif %}>
+                        Abuja
+                    </option>
+
+                    <option value="Enugu"
+                        {% if current_city == "Enugu" %}selected{% endif %}>
+                        Enugu
+                    </option>
+
+                    <option value="Kano"
+                        {% if current_city == "Kano" %}selected{% endif %}>
+                        Kano
+                    </option>
+
+                    <option value="Kano"
+                        {% if current_city == "Kwara" %}selected{% endif %}>
+                        Kwara
+                    </option>
+
+
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label for="listing_type">LISTING TYPE</label>
+
+                <select name="listing_type" id="listing_type">
+                    <option value="">All listings</option>
+
+                    <option value="rent"
+                        {% if listing_type == "rent" %}selected{% endif %}>
+                        Rent
+                    </option>
+
+                    <option value="sale"
+                        {% if listing_type == "sale" %}selected{% endif %}>
+                        Sale
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-apply">
+                Apply Filters
+            </button>
+
+            <a href="?" class="btn-clear">
+                Clear Filters
+            </a>
+
+        </form>
+    </div>
+
+    <!-- Results heading -->
+    <div class="results-heading">
+        <h2>Available Properties</h2>
+
+        {% if pagination.total != None %}
+            <span class="results-count">
+                {{ pagination.total }} properties found
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- API error message -->
+    {% if api_error %}
+        <div class="error-state">
+            <h3>Unable to load properties</h3>
+            <p>{{ api_error }}</p>
+            <p>Please refresh the page or try again later.</p>
+        </div>
+
+    {% else %}
+
+        <!-- Property cards -->
+        <div class="property-grid">
+
+            {% for property in properties %}
+
+                <article class="property-card">
+
+            {% if property.listingType == "sale" %}
+                <img src="{% static 'images/sales.webp' %}"
+                alt="Property for sale" class="property-image">
+
+            {% elif property.listingType == "rent" %}
+                <img src="{% static 'images/rent.jpg' %}"
+                alt="Property for rent" class="property-image">
+            {% endif %}
+
+                    <h3 class="property-title">
+                        {{ property.title|default:"Untitled Property" }}
+                    </h3>
+
+                    <div class="property-badges">
+
+                        {% if property.listingType == "rent" %}
+                            <span class="badge badge-rent">For Rent</span>
+                        {% elif property.listingType == "sale" %}
+                            <span class="badge badge-sale">For Sale</span>
+                        {% else %}
+                            <span class="badge badge-type">
+                                {{ property.listingType|default:"Listing" }}
+                            </span>
+                        {% endif %}
+
+                        <span class="badge badge-type">
+                            {{ property.propertyType|default:"Property" }}
+                        </span>
+
+                        {% if property.status == "available" %}
+                            <span class="badge badge-available">
+                                Available
+                            </span>
+                        {% elif property.status == "sold" %}
+                            <span class="badge badge-sold">Sold</span>
+                        {% elif property.status == "rented" %}
+                            <span class="badge badge-rented">Rented</span>
+                        {% elif property.status %}
+                            <span class="badge badge-type">
+                                {{ property.status }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="property-price">
+                        {% if property.price != None %}
+                            ₦{{ property.price|floatformat:2 }}
+                        {% else %}
+                            Price on request
+                        {% endif %}
+                    </div>
+
+                    <div class="property-location">
+                        {{ property.address|default:"Address not provided" }}
+                        {% if property.city %}, {{ property.city }}{% endif %}
+                        {% if property.state %}, {{ property.state }}{% endif %}
+                    </div>
+
+                    {% if property.description %}
+                        <p class="property-description">
+                            {{ property.description|truncatewords:25 }}
+                        </p>
+                    {% endif %}
+
+                    <div class="property-meta">
+
+                        <div>
+                            <div class="meta-label">BEDROOMS</div>
+                            <div class="meta-value">
+                                {{ property.bedrooms|default_if_none:"-" }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="meta-label">BATHROOMS</div>
+                            <div class="meta-value">
+                                {{ property.bathrooms|default_if_none:"-" }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="property-state">
+                        Property type:
+                        {{ property.propertyType|default:"Not specified" }}
+                    </div>
+
+                </article>
+
+            {% empty %}
+
+                <div class="empty-state">
+                    <h3>No properties found</h3>
+                    <p>
+                        Try selecting another city or listing type.
+                    </p>
+                    <a href="?">View all properties</a>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.total != None %}
+            <div class="pagination">
+
+                {% if previous_url %}
+                    <a class="page-btn" href="{{ previous_url }}">
+                        &larr; Previous
+                    </a>
+                {% endif %}
+
+                <span class="page-info">
+                    Page {{ current_page }}
+                </span>
+
+                {% if next_url %}
+                    <a class="page-btn" href="{{ next_url }}">
+                        Next &rarr;
+                    </a>
+                {% endif %}
+
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+    <div class="footer-note">
+        Property listings are retrieved from the external Property Listings API.
+    </div>
+
+</div>
+
+{% endblock %}
